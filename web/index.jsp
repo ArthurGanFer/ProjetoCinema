@@ -13,16 +13,19 @@
         <title>Cinema</title>
     </head>
     <body>
+        <c:if test="${cadeiras == null}">
+            <c:redirect url="FrontController?command=init"></c:redirect>
+        </c:if>
         <h1>Cinema</h1>
         <hr>
         <c:forEach var="i" begin="0" end="59">
             <c:if test="${i % 10 == 0}">
                 <br>
             </c:if>
-                <a href="FrontController?cadeira=${i}&command=selecionar">
-                    <img id="c${i}" alt="cadeira" src="img/cadeira${cadeiras.get(i)}.png" style="width:60px"/>
-                </a>
+            <a href="FrontController?cadeira=${i}&command=selecionar">
+                <img id="c${i}" alt="cadeira" src="img/cadeira${cadeiras.get(i)}.png" style="width:60px"/>
+            </a>
         </c:forEach>
-        
+        <p><a href="FrontController?command=comprar"><b>COMPRAR</b></a></p>
     </body>
 </html>

@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 //@WebServlet( urlPatterns = "/FrontController")
 public class FrontController extends HttpServlet {
+
     private int cadeira;
     private String command;
 
@@ -42,28 +43,39 @@ public class FrontController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet FrontController</title>");            
+            out.println("<title>Servlet FrontController</title>");
             out.println("</head>");
             out.println("<body>");
-            
+
             List<Integer> cadeiras = new ArrayList<>();
-            if(request.getSession().getAttribute("cadeiras") == null)
-            {
+            if (request.getSession().getAttribute("cadeiras") == null) {
                 for (int i = 0; i < 60; i++) {
                     cadeiras.add(1);
                 }
                 request.getSession().setAttribute("cadeiras", cadeiras);
             } else {
-                cadeiras = (List<Integer>)request.getSession().getAttribute("cadeiras");
+                cadeiras = (List<Integer>) request.getSession().getAttribute("cadeiras");
             }
-            
-            if(command.equals("selecionar")){
-                cadeiras.set(cadeira, 2);
-                RequestDispatcher rd = request.getRequestDispatcher("/index.jsp");
-                rd.forward(request, response);
+
+            if (command.equals("init")) {
+                System.out.println("INIT");
+            } else if (command.equals("selecionar")) {
+                cadeira = Integer.parseInt(request.getParameter("cadeira"));
+                System.out.println("SELECIONAR " + cadeira);
+                if (cadeiras.get(cadeira) != 3) {
+                    cadeiras.set(cadeira, (cadeiras.get(cadeira) == 1) ? 2 : 1);
+                }
+            } else if (command.equals("comprar")) {
+                System.out.println("COMPRAR");
+                for (int i = 0; i < cadeiras.size(); i++) {
+                    if (cadeiras.get(i) == 2) {
+                        cadeiras.set(i, 3);
+                    }
+                }
             }
-            
-            
+            RequestDispatcher rd = request.getRequestDispatcher("/index.jsp");
+            rd.forward(request, response);
+
             out.println("</body>");
             out.println("</html>");
         }
@@ -81,7 +93,6 @@ public class FrontController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        cadeira = Integer.parseInt(request.getParameter("cadeira"));
         command = request.getParameter("command");
         processRequest(request, response);
     }
