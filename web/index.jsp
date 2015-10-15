@@ -11,6 +11,15 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Cinema</title>
+        <style type="text/css">
+            #comprar{
+                background-color: #008CBA;
+                padding: 10px;
+                text-decoration: none;
+                color: #fff;
+                border:none;
+            }
+            </style>
     </head>
     <body>
         <c:if test="${cadeiras == null}">
@@ -22,10 +31,18 @@
             <c:if test="${i % 10 == 0}">
                 <br>
             </c:if>
-            <a href="FrontController?cadeira=${i}&command=selecionar">
-                <img id="c${i}" alt="cadeira" src="img/cadeira${cadeiras.get(i)}.png" style="width:60px"/>
-            </a>
+                <a href="FrontController?cadeira=${i}&command=selecionar"><img id="c${i}" alt="cadeira" src="img/cadeira${cadeiras.get(i)}.png" style="width:60px"/></a>
         </c:forEach>
-        <p><a href="FrontController?command=comprar"><b>COMPRAR</b></a></p>
+                
+                <form action="FrontController" method="GET">
+                    <input type="hidden" name="command" value="comprar"/>
+                    <p>
+                        <select name="tipo">
+                            <option value="1">Inteira</option>
+                            <option value="2">Meia</option>
+                        </select>
+                    </p>
+                    <p><input type="submit" value="COMPRAR" id="comprar"/></p>
+                </form>
     </body>
 </html>

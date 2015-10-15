@@ -5,6 +5,8 @@
  */
 package com.br.lp2.controller;
 
+import com.br.lp2.model.dao.IngressoDAO;
+import com.br.lp2.model.entities.Ingresso;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -22,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 //@WebServlet( urlPatterns = "/FrontController")
 public class FrontController extends HttpServlet {
-
     private int cadeira;
     private String command;
 
@@ -43,39 +44,49 @@ public class FrontController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet FrontController</title>");
+            out.println("<title>Servlet FrontController</title>");            
             out.println("</head>");
             out.println("<body>");
-
+            
             List<Integer> cadeiras = new ArrayList<>();
-            if (request.getSession().getAttribute("cadeiras") == null) {
+            if(request.getSession().getAttribute("cadeiras") == null)
+            {
                 for (int i = 0; i < 60; i++) {
                     cadeiras.add(1);
                 }
                 request.getSession().setAttribute("cadeiras", cadeiras);
             } else {
-                cadeiras = (List<Integer>) request.getSession().getAttribute("cadeiras");
+                cadeiras = (List<Integer>)request.getSession().getAttribute("cadeiras");
             }
-
-            if (command.equals("init")) {
+            
+            IngressoDAO dao = new IngressoDAO();
+            if(command.equals("init")){
                 System.out.println("INIT");
-            } else if (command.equals("selecionar")) {
-                cadeira = Integer.parseInt(request.getParameter("cadeira"));
-                System.out.println("SELECIONAR " + cadeira);
-                if (cadeiras.get(cadeira) != 3) {
-                    cadeiras.set(cadeira, (cadeiras.get(cadeira) == 1) ? 2 : 1);
+                
+                List<Ingresso> lista = dao.read();
+                for (Ingresso ingresso : lista) {
+                    int pos = ingresso.getCadeira();
+                    cadeiras.set(pos, 3);
                 }
-            } else if (command.equals("comprar")) {
+                
+            }else if(command.equals("selecionar")){
+                cadeira = Integer.parseInt(request.getParameter("cadeira"));
+                System.out.println("SELECIONAR "+cadeira);
+                if(cadeiras.get(cadeira)!=3) cadeiras.set(cadeira, (cadeiras.get(cadeira)==1)?2:1 );
+            } else if(command.equals("comprar")){
                 System.out.println("COMPRAR");
+                int tipo = Integer.parseInt(request.getParameter("tipo"));
                 for (int i = 0; i < cadeiras.size(); i++) {
-                    if (cadeiras.get(i) == 2) {
-                        cadeiras.set(i, 3);
+                    if(cadeiras.get(i)==2) {
+                        cadeiras.set(i,3);
+                        dao.insert(new Ingresso(i,tipo));
                     }
                 }
             }
             RequestDispatcher rd = request.getRequestDispatcher("/index.jsp");
             rd.forward(request, response);
-
+            
+            
             out.println("</body>");
             out.println("</html>");
         }
@@ -93,6 +104,7 @@ public class FrontController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
         command = request.getParameter("command");
         processRequest(request, response);
     }
